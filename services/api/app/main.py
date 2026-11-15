@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from contextlib import asynccontextmanager
 from time import perf_counter
 from uuid import uuid4
 
@@ -10,16 +11,19 @@ from app.core.config import get_settings
 from app.api.v1 import context, devices, streams
 
 settings = get_settings()
-app = FastAPI(title="MANSI API", version="1.0.0", docs_url="/docs" if settings.environment != "production" else None)
+
+
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    if settings.environment in {"staging", "production"}:
+        raise RuntimeError("SupabaseRepository is required before staging or production startup")
+    yield
+
+
+app = FastAPI(title="MANSI API", version="1.0.0", docs_url="/docs" if settings.environment != "production" else None, lifespan=lifespan)
 app.include_router(devices.router, prefix=settings.api_prefix)
 app.include_router(streams.router, prefix=settings.api_prefix)
 app.include_router(context.router, prefix=settings.api_prefix)
-
-
-@app.on_event("startup")
-async def refuse_ephemeral_storage_in_production() -> None:
-    if settings.environment in {"staging", "production"}:
-        raise RuntimeError("SupabaseRepository is required before staging or production startup")
 
 
 @app.middleware("http")
