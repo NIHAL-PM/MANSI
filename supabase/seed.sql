@@ -1,0 +1,2 @@
+-- Deliberately contains no auth users, media, embeddings, locations, or personal data.
+-- Create test identities through Supabase Auth in local/dev environments.
