@@ -1,5 +1,7 @@
+create extension if not exists "uuid-ossp";
 create extension if not exists pgcrypto;
 create extension if not exists vector;
+create extension if not exists pg_trgm;
 
 create type public.device_type_enum as enum ('android_phone','xiao_sense','xiaozhi_speaker','web_client','integration');
 create type public.device_status_enum as enum ('active','offline','revoked');
