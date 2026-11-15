@@ -3,7 +3,7 @@
 <!-- Update order: open branch → update Status → open PR → paste verification output → mark Merged -->
 <!-- No agent self-merges. Human maintainer or integration lead approves merges. -->
 
-**Last updated:** 2026-11-15  
+**Last updated:** 2026-11-15T06:43:07+05:30  
 **Integration lead:** Antigravity (this conversation)  
 **Repository:** https://github.com/NIHAL-PM/MANSI.git  
 **Branch:** `main` (clean, 1 commit)  
@@ -28,7 +28,7 @@
 
 | Ticket | Status | Agent | Branch | PR | Blocked by | Scope Lock | Definition of Done | Verification Output |
 |--------|--------|-------|--------|----|------------|------------|--------------------|---------------------|
-| PROJ-101 Database foundation | ⬜ Not started | Agent-DB | `proj-101-database-foundation` | — | _none_ | `supabase/migrations/0001*`, `0002*`, `supabase/seed.sql` | `supabase db reset` succeeds; SQL FK tests pass | _paste output here_ |
+| PROJ-101 Database foundation | 🔒 Blocked | Agent-DB | `proj-101-database-foundation` | — | _none_ | `supabase/migrations/0001*`, `0002*`, `supabase/seed.sql` | `supabase db reset` succeeds; SQL FK tests pass | `npx --yes supabase@latest db reset` → `Target: local stack (127.0.0.1:54322)` then `LocalDbRunningError: failed to inspect service` (Docker is unavailable). Updated 2026-11-15T06:43:07+05:30. |
 | PROJ-102 Context schema | 🔒 Blocked | Agent-DB | `proj-102-context-schema` | — | PROJ-101 | `supabase/migrations/0003*`, `0004*` | `supabase db reset && psql -f supabase/tests/schema_test.sql` | _paste output here_ |
 | PROJ-103 Security schema | 🔒 Blocked | Agent-DB | `proj-103-security-schema` | — | PROJ-102 | `supabase/migrations/0005*`, `0006*`, `0007*`, `supabase/tests/rls_test.sql` | RLS test proves owner access and cross-user denial | _paste output here_ |
 | PROJ-104 Shared contracts | ⬜ Not started | Agent-Contracts | `proj-104-shared-contracts` | — | _none_ | `services/shared/python/personal_ai_contracts/**`, `docs/api/openapi.yaml` | `pytest services/shared/python`; OpenAPI validation passes | _paste output here_ |
@@ -152,3 +152,4 @@ You own only the paths in your ticket's Scope Lock column in INTEGRATION_BOARD.m
 | Date | Ticket | Issue | Resolution |
 |------|--------|-------|------------|
 | — | — | — | — |
+| 2026-11-15T06:43:07+05:30 | PROJ-101 | `supabase db reset` cannot inspect the local stack because Docker is not installed/running. | Start Docker Desktop/local Supabase, then rerun reset and the FK test before opening the PR. |
