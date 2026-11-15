@@ -16,6 +16,12 @@ app.include_router(streams.router, prefix=settings.api_prefix)
 app.include_router(context.router, prefix=settings.api_prefix)
 
 
+@app.on_event("startup")
+async def refuse_ephemeral_storage_in_production() -> None:
+    if settings.environment in {"staging", "production"}:
+        raise RuntimeError("SupabaseRepository is required before staging or production startup")
+
+
 @app.middleware("http")
 async def trace_middleware(request: Request, call_next):
     trace_id = request.headers.get("x-trace-id", str(uuid4()))
