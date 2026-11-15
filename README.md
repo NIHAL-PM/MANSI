@@ -15,7 +15,7 @@ The architecture and product contract are in [PERSONAL_AI_ENGINEERING_PRODUCT_MA
 
 ```powershell
 python -m pip install -r services/api/requirements.txt
-$env:PYTHONPATH = "services/api"
+$env:PYTHONPATH = "services/api;services/shared/python"
 python -m uvicorn app.main:app --app-dir services/api --reload
 ```
 
