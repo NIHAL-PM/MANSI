@@ -1,0 +1,31 @@
+# Local secrets and environment files
+.env
+.env.*
+!.env.example
+
+# Android / Gradle
+.gradle/
+**/build/
+local.properties
+*.keystore
+*.jks
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# PlatformIO / embedded build products
+.pio/
+
+# IDE and OS files
+.idea/
+.vscode/
+*.swp
+Thumbs.db
+.DS_Store
+
+# Agent-local state; project instructions live in AGENTS.md instead
+.agent/
+.antigravity-local/

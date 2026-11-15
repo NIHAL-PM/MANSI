@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="560" viewBox="0 0 1400 560" role="img" aria-labelledby="title desc">
+<title id="title">Video stream manager job fanout</title><desc id="desc">Camera frames are accepted by a stream manager then sent independently to storage, face, visual, and embedding queues before context fusion.</desc>
+<style>text{font-family:Arial,sans-serif;fill:#102a43}.h{font-size:22px;font-weight:bold}.t{font-size:15px}.box{stroke:#1f4e79;stroke-width:2;rx:12;fill:#eaf3fb}.q{stroke:#a45c00;stroke-width:2;rx:12;fill:#fff3df}.arr{stroke:#1f4e79;stroke-width:3;fill:none;marker-end:url(#a)}</style><defs><marker id="a" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#1f4e79"/></marker></defs>
+<text class="h" x="540" y="45">Camera Stream Manager Fanout</text>
+<rect class="box" x="40" y="225" width="170" height="85"/><text class="t" x="83" y="258">XIAO frames</text><text class="t" x="65" y="280">sequence timestamp hash</text>
+<rect class="box" x="290" y="200" width="225" height="135"/><text class="t" x="331" y="236">Stream manager</text><text class="t" x="319" y="260">auth reorder dedupe</text><text class="t" x="318" y="282">backpressure health</text><text class="t" x="325" y="304">temporary rolling buffer</text>
+<rect class="q" x="610" y="55" width="190" height="70"/><text class="t" x="651" y="86">Face queue</text><text class="t" x="635" y="108">narrow fast pipeline</text>
+<rect class="q" x="610" y="175" width="190" height="70"/><text class="t" x="643" y="206">Visual queue</text><text class="t" x="638" y="228">OCR scene objects</text>
+<rect class="q" x="610" y="295" width="190" height="70"/><text class="t" x="626" y="326">Embedding queue</text><text class="t" x="633" y="348">SigLIP visual vector</text>
+<rect class="q" x="610" y="415" width="190" height="70"/><text class="t" x="619" y="446">Storage decision</text><text class="t" x="628" y="468">retain or expire asset</text>
+<rect class="box" x="890" y="55" width="205" height="70"/><text class="t" x="925" y="86">Face worker</text><text class="t" x="907" y="108">detect track embed match</text>
+<rect class="box" x="890" y="175" width="205" height="70"/><text class="t" x="919" y="206">Visual worker</text><text class="t" x="906" y="228">typed observations</text>
+<rect class="box" x="890" y="295" width="205" height="70"/><text class="t" x="919" y="326">Vector worker</text><text class="t" x="901" y="348">image embedding record</text>
+<rect class="box" x="890" y="415" width="205" height="70"/><text class="t" x="906" y="446">Storage worker</text><text class="t" x="910" y="468">media retention record</text>
+<rect class="box" x="1180" y="205" width="180" height="125"/><text class="t" x="1215" y="244">Context fusion</text><text class="t" x="1203" y="268">event revisions</text><text class="t" x="1200" y="290">evidence links</text><text class="t" x="1202" y="312">Postgres writes</text>
+<path class="arr" d="M210 267 H290"/><path class="arr" d="M515 267 H560 V90 H610"/><path class="arr" d="M515 267 H610 V210"/><path class="arr" d="M515 267 H560 V330 H610"/><path class="arr" d="M515 267 H560 V450 H610"/><path class="arr" d="M800 90 H890"/><path class="arr" d="M800 210 H890"/><path class="arr" d="M800 330 H890"/><path class="arr" d="M800 450 H890"/><path class="arr" d="M1095 90 H1140 V240 H1180"/><path class="arr" d="M1095 210 H1180"/><path class="arr" d="M1095 330 H1140 V290 H1180"/><path class="arr" d="M1095 450 H1140 V300 H1180"/>
+</svg>

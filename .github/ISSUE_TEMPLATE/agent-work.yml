@@ -1,0 +1,47 @@
+name: Agent work item
+description: A scope-locked implementation task for one agent or developer.
+title: "[PROJ-]: "
+labels: ["agent-work"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        One agent owns one ticket and its declared paths. Cross-cutting work must be split.
+  - type: input
+    id: ticket_id
+    attributes:
+      label: Ticket ID
+      placeholder: PROJ-101
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Required outcome
+      description: State concrete behavior, interfaces, and acceptance criteria.
+    validations:
+      required: true
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Blocked by
+      placeholder: "None, or #12, #13"
+    validations:
+      required: true
+  - type: textarea
+    id: ownership
+    attributes:
+      label: File ownership / scope lock
+      description: List exact folders/files the assignee may modify.
+      placeholder: |
+        Allowed: backend/ingestion/**, tests/unit/ingestion/**
+        Forbidden: supabase/**, apps/android/**
+    validations:
+      required: true
+  - type: textarea
+    id: dod
+    attributes:
+      label: Definition of done
+      description: Include exact verification command and expected result.
+    validations:
+      required: true

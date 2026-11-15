@@ -1,0 +1,21 @@
+# The GitHub organization/user must replace these role handles with real GitHub
+# teams or maintainers before enabling required CODEOWNERS review.
+# @NIHAL-PM is intentionally the temporary integration owner for repository-wide paths.
+
+* @NIHAL-PM
+
+/infra/ @NIHAL-PM
+/.github/ @NIHAL-PM
+/supabase/ @NIHAL-PM
+/backend/db/ @NIHAL-PM
+/backend/ @NIHAL-PM
+/workers/ @NIHAL-PM
+/services/ @NIHAL-PM
+/apps/android/ @NIHAL-PM
+/firmware/xiao-esp32s3-sense/ @NIHAL-PM
+/firmware/xiaozhi-n16r8-speaker/ @NIHAL-PM
+/tests/ @NIHAL-PM
+/e2e/ @NIHAL-PM
+/qa/ @NIHAL-PM
+/docs/ @NIHAL-PM
+/AGENTS.md @NIHAL-PM

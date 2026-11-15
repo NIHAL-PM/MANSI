@@ -1,0 +1,309 @@
+openapi: 3.1.0
+info:
+  title: Personal AI Platform API
+  version: 1.0.0
+  description: Canonical HTTP contract for authenticated device, context, media, timeline, and action operations.
+servers:
+  - url: https://api.example.invalid/v1
+security:
+  - bearerAuth: []
+paths:
+  /health:
+    get:
+      security: []
+      operationId: health
+      responses:
+        '200': {description: Service online}
+  /devices/pair:
+    post:
+      operationId: pairDevice
+      requestBody:
+        required: true
+        content: {application/json: {schema: {$ref: '#/components/schemas/PairDeviceRequest'}}}
+      responses:
+        '201': {description: Device paired, content: {application/json: {schema: {$ref: '#/components/schemas/Device'}}}}
+        '400': {$ref: '#/components/responses/Problem'}
+        '401': {$ref: '#/components/responses/Problem'}
+        '409': {$ref: '#/components/responses/Problem'}
+  /devices/{deviceId}/revoke:
+    post:
+      operationId: revokeDevice
+      parameters: [{$ref: '#/components/parameters/DeviceId'}]
+      requestBody:
+        required: true
+        content: {application/json: {schema: {type: object, required: [reason], properties: {reason: {type: string, minLength: 1, maxLength: 500}}}}}
+      responses:
+        '200': {description: Device revoked}
+        '401': {$ref: '#/components/responses/Problem'}
+        '404': {$ref: '#/components/responses/Problem'}
+  /streams:
+    post:
+      operationId: createStream
+      requestBody:
+        required: true
+        content: {application/json: {schema: {$ref: '#/components/schemas/CreateStreamRequest'}}}
+      responses:
+        '201': {description: Stream created, content: {application/json: {schema: {$ref: '#/components/schemas/StreamSession'}}}}
+        '401': {$ref: '#/components/responses/Problem'}
+        '409': {$ref: '#/components/responses/Problem'}
+  /streams/{streamId}/control:
+    post:
+      operationId: controlStream
+      parameters: [{$ref: '#/components/parameters/StreamId'}]
+      requestBody:
+        required: true
+        content: {application/json: {schema: {$ref: '#/components/schemas/StreamControl'}}}
+      responses:
+        '200': {description: Control accepted}
+        '401': {$ref: '#/components/responses/Problem'}
+        '404': {$ref: '#/components/responses/Problem'}
+  /context:
+    post:
+      operationId: ingestContext
+      security: [{streamBearer: []}]
+      requestBody:
+        required: true
+        content: {application/json: {schema: {$ref: '#/components/schemas/ContextEnvelope'}}}
+      responses:
+        '202': {description: Accepted, content: {application/json: {schema: {$ref: '#/components/schemas/IngestAccepted'}}}}
+        '200': {description: Idempotent duplicate, content: {application/json: {schema: {$ref: '#/components/schemas/IngestAccepted'}}}}
+        '400': {$ref: '#/components/responses/Problem'}
+        '401': {$ref: '#/components/responses/Problem'}
+        '409': {$ref: '#/components/responses/Problem'}
+  /media/init:
+    post:
+      operationId: initMediaUpload
+      security: [{streamBearer: []}]
+      requestBody:
+        required: true
+        content: {application/json: {schema: {$ref: '#/components/schemas/MediaInitRequest'}}}
+      responses:
+        '201': {description: Upload instruction, content: {application/json: {schema: {$ref: '#/components/schemas/MediaUploadInstruction'}}}}
+        '400': {$ref: '#/components/responses/Problem'}
+        '401': {$ref: '#/components/responses/Problem'}
+  /media/{mediaAssetId}/complete:
+    post:
+      operationId: completeMediaUpload
+      security: [{streamBearer: []}]
+      parameters: [{$ref: '#/components/parameters/MediaAssetId'}]
+      requestBody:
+        required: true
+        content: {application/json: {schema: {$ref: '#/components/schemas/MediaCompleteRequest'}}}
+      responses:
+        '202': {description: Verified and queued, content: {application/json: {schema: {$ref: '#/components/schemas/IngestAccepted'}}}}
+        '400': {$ref: '#/components/responses/Problem'}
+        '401': {$ref: '#/components/responses/Problem'}
+        '409': {$ref: '#/components/responses/Problem'}
+  /timeline:
+    get:
+      operationId: listTimeline
+      parameters:
+        - {name: cursor, in: query, schema: {type: string}}
+        - {name: limit, in: query, schema: {type: integer, minimum: 1, maximum: 100, default: 30}}
+        - {name: from, in: query, schema: {type: string, format: date-time}}
+        - {name: to, in: query, schema: {type: string, format: date-time}}
+      responses:
+        '200': {description: User-scoped events, content: {application/json: {schema: {$ref: '#/components/schemas/TimelinePage'}}}}
+        '401': {$ref: '#/components/responses/Problem'}
+  /search:
+    post:
+      operationId: searchMemory
+      requestBody:
+        required: true
+        content: {application/json: {schema: {$ref: '#/components/schemas/SearchRequest'}}}
+      responses:
+        '200': {description: Evidence-backed matches, content: {application/json: {schema: {$ref: '#/components/schemas/SearchResponse'}}}}
+        '400': {$ref: '#/components/responses/Problem'}
+        '401': {$ref: '#/components/responses/Problem'}
+  /actions/{actionId}/confirm:
+    post:
+      operationId: confirmAction
+      parameters: [{$ref: '#/components/parameters/ActionId'}]
+      requestBody:
+        required: true
+        content: {application/json: {schema: {$ref: '#/components/schemas/ActionDecision'}}}
+      responses:
+        '200': {description: Action decision recorded, content: {application/json: {schema: {$ref: '#/components/schemas/AgentAction'}}}}
+        '401': {$ref: '#/components/responses/Problem'}
+        '404': {$ref: '#/components/responses/Problem'}
+        '409': {$ref: '#/components/responses/Problem'}
+  /proactive/{candidateId}/response:
+    post:
+      operationId: respondToProactiveCandidate
+      parameters: [{$ref: '#/components/parameters/CandidateId'}]
+      requestBody:
+        required: true
+        content: {application/json: {schema: {$ref: '#/components/schemas/ProactiveResponse'}}}
+      responses:
+        '200': {description: Response recorded}
+        '401': {$ref: '#/components/responses/Problem'}
+        '404': {$ref: '#/components/responses/Problem'}
+components:
+  securitySchemes:
+    bearerAuth: {type: http, scheme: bearer, bearerFormat: JWT}
+    streamBearer: {type: http, scheme: bearer, bearerFormat: scoped-device-stream-token}
+  parameters:
+    DeviceId: {name: deviceId, in: path, required: true, schema: {type: string, format: uuid}}
+    StreamId: {name: streamId, in: path, required: true, schema: {type: string, format: uuid}}
+    MediaAssetId: {name: mediaAssetId, in: path, required: true, schema: {type: string, format: uuid}}
+    ActionId: {name: actionId, in: path, required: true, schema: {type: string, format: uuid}}
+    CandidateId: {name: candidateId, in: path, required: true, schema: {type: string, format: uuid}}
+  responses:
+    Problem:
+      description: Problem detail response
+      content: {application/problem+json: {schema: {$ref: '#/components/schemas/Problem'}}}
+  schemas:
+    PairDeviceRequest:
+      type: object
+      required: [device_type, display_name, public_key]
+      properties:
+        device_type: {type: string, enum: [android_phone, xiao_sense, xiaozhi_speaker]}
+        display_name: {type: string, minLength: 1, maxLength: 100}
+        public_key: {type: string, minLength: 32, maxLength: 8192}
+        firmware_version: {type: string, maxLength: 100}
+    Device:
+      type: object
+      required: [id, device_type, display_name, status, created_at]
+      properties:
+        id: {type: string, format: uuid}
+        device_type: {type: string}
+        display_name: {type: string}
+        status: {type: string, enum: [active, revoked]}
+        created_at: {type: string, format: date-time}
+    CreateStreamRequest:
+      type: object
+      required: [device_id, stream_type, sampling_config]
+      properties:
+        device_id: {type: string, format: uuid}
+        stream_type: {type: string, enum: [camera, audio, location, notification, calendar, device_state, playback]}
+        sampling_config: {type: object, additionalProperties: true}
+    StreamSession:
+      type: object
+      required: [stream_id, credential, expires_at]
+      properties:
+        stream_id: {type: string, format: uuid}
+        credential: {type: string}
+        expires_at: {type: string, format: date-time}
+        control_channel: {type: string, format: uri}
+    StreamControl:
+      type: object
+      required: [operation]
+      properties:
+        operation: {type: string, enum: [pause, resume, close, set_sampling]}
+        sampling_config: {type: object, additionalProperties: true}
+    ContextEnvelope:
+      type: object
+      required: [schema_version, source_id, stream_id, sequence_no, type, occurred_at, payload, privacy_level]
+      properties:
+        schema_version: {type: integer, const: 1}
+        source_id: {type: string, format: uuid}
+        stream_id: {type: string, format: uuid}
+        sequence_no: {type: integer, minimum: 0}
+        type: {type: string, enum: [location, motion, notification, calendar, app_state, device_state, playback_state, user_action]}
+        occurred_at: {type: string, format: date-time}
+        payload: {type: object, additionalProperties: true}
+        accuracy_m: {type: number, minimum: 0}
+        privacy_level: {type: string, enum: [private, sensitive, shared_caregiver]}
+        checksum: {type: string, pattern: '^sha256:[a-f0-9]{64}$'}
+    MediaInitRequest:
+      type: object
+      required: [stream_id, sequence_no, media_type, occurred_at, content_type, byte_size, sha256]
+      properties:
+        stream_id: {type: string, format: uuid}
+        sequence_no: {type: integer, minimum: 0}
+        media_type: {type: string, enum: [image, audio, video]}
+        occurred_at: {type: string, format: date-time}
+        ended_at: {type: string, format: date-time}
+        content_type: {type: string, enum: [image/jpeg, audio/opus, audio/wav, video/mp4]}
+        byte_size: {type: integer, minimum: 1, maximum: 52428800}
+        sha256: {type: string, pattern: '^[a-f0-9]{64}$'}
+    MediaUploadInstruction:
+      type: object
+      required: [media_asset_id, bucket, path, upload_url, expires_at]
+      properties:
+        media_asset_id: {type: string, format: uuid}
+        bucket: {type: string}
+        path: {type: string}
+        upload_url: {type: string, format: uri}
+        expires_at: {type: string, format: date-time}
+    MediaCompleteRequest:
+      type: object
+      required: [sha256, byte_size]
+      properties:
+        sha256: {type: string, pattern: '^[a-f0-9]{64}$'}
+        byte_size: {type: integer, minimum: 1}
+    IngestAccepted:
+      type: object
+      required: [id, status, trace_id]
+      properties:
+        id: {type: string, format: uuid}
+        status: {type: string, enum: [accepted, queued, duplicate]}
+        trace_id: {type: string}
+    TimelinePage:
+      type: object
+      required: [items]
+      properties:
+        items: {type: array, items: {$ref: '#/components/schemas/MemoryEvent'}}
+        next_cursor: {type: string, nullable: true}
+    MemoryEvent:
+      type: object
+      required: [id, started_at, ended_at, status, revision_no, evidence]
+      properties:
+        id: {type: string, format: uuid}
+        started_at: {type: string, format: date-time}
+        ended_at: {type: string, format: date-time}
+        status: {type: string, enum: [open, stabilized, closed, deleted]}
+        revision_no: {type: integer, minimum: 1}
+        summary: {type: string, nullable: true}
+        confidence: {type: number, minimum: 0, maximum: 1}
+        evidence: {type: array, items: {$ref: '#/components/schemas/EvidenceReference'}}
+    EvidenceReference:
+      type: object
+      required: [source_type, source_id, relevance]
+      properties:
+        source_type: {type: string}
+        source_id: {type: string, format: uuid}
+        relevance: {type: number, minimum: 0, maximum: 1}
+    SearchRequest:
+      type: object
+      required: [query]
+      properties:
+        query: {type: string, minLength: 1, maxLength: 2000}
+        from: {type: string, format: date-time}
+        to: {type: string, format: date-time}
+        limit: {type: integer, minimum: 1, maximum: 20, default: 5}
+    SearchResponse:
+      type: object
+      required: [answer, evidence]
+      properties:
+        answer: {type: string}
+        evidence: {type: array, items: {$ref: '#/components/schemas/EvidenceReference'}}
+    ActionDecision:
+      type: object
+      required: [decision]
+      properties:
+        decision: {type: string, enum: [confirm, reject, cancel]}
+        edits: {type: object, additionalProperties: true}
+    AgentAction:
+      type: object
+      required: [id, action_type, status, requires_confirmation]
+      properties:
+        id: {type: string, format: uuid}
+        action_type: {type: string}
+        status: {type: string}
+        requires_confirmation: {type: boolean}
+        external_reference: {type: string, nullable: true}
+    ProactiveResponse:
+      type: object
+      required: [response]
+      properties:
+        response: {type: string, enum: [accept, dismiss, snooze, never_suggest_this]}
+    Problem:
+      type: object
+      required: [type, title, status, detail, trace_id]
+      properties:
+        type: {type: string, format: uri-reference}
+        title: {type: string}
+        status: {type: integer}
+        detail: {type: string}
+        trace_id: {type: string}
